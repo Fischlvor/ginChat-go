@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <title>ginChat</title>
+    <link rel="stylesheet" href="/asset/plugins/mui/css/mui.css" />
+    <link rel="stylesheet" href="/asset/css/login.css" />
+    <link rel="icon" href="asset/images/favicon.ico" type="image/x-icon" />
+    <script src="/asset/plugins/mui/js/mui.js"></script>
+    <script src="/asset/js/vue.min.js"></script>
+    <script src="/asset/js/util.js"></script>
+</head>
+
+<body>
+
+    <header class="mui-bar mui-bar-nav">
+        <h1 class="mui-title">注册</h1>
+    </header>
+    <div class="mui-content register-page" id="pageapp">
+        <form id='login-form' class="mui-input-group register-form">
+            <div class="mui-input-row">
+                <input v-model="user.name" placeholder="请输入用户名" type="text" class="mui-input-clear mui-input">
+            </div>
+            <div class="mui-input-row">
+                <input v-model="user.password" placeholder="请输入密码" type="password" class="mui-input-clear mui-input">
+            </div>
+            <div class="mui-input-row">
+                <input v-model="user.repassword" placeholder="再输入密码" type="password" class="mui-input-clear mui-input">
+            </div>
+        </form>
+        <div class="mui-content-padded">
+            <button @click="login" type="button" class="mui-btn mui-btn-block mui-btn-primary btn-register">注册</button>
+            <div class="link-area"><a id='reg' href="/index">登录账号</a> <span class="spliter">|</span> <a
+                    id='forgetPassword'>忘记密码</a>
+            </div>
+        </div>
+        <div class="mui-content-padded oauth-area">
+        </div>
+    </div>
+</body>
+
+</html>
+<script>
+    var app = new Vue({
+        el: "#pageapp",
+        data: function () {
+            return {
+                user: {
+                    name: "",       // 用户名
+                    password: "",   // 密码
+                    repassword: "", // 确认密码
+                }
+            }
+        },
+        methods: {
+            login: function () {
+                // 检测用户名是否为空
+                if (!this.user.name) {
+                    mui.toast("用户名不能为空");
+                    return;
+                }
+
+                // 检测用户名的合法性：字母、数字、下划线，长度3到20
+                if (!this.validateUsername(this.user.name)) {
+                    mui.toast("用户名格式不正确，必须是3到20个字母、数字或下划线");
+                    return;
+                }
+
+                // 检测密码是否为空
+                if (!this.user.password) {
+                    mui.toast("密码不能为空");
+                    return;
+                }
+
+                // 检测密码格式：包含字母、数字和符号，且长度在8到16位之间
+                if (!this.validatePassword(this.user.password)) {
+                    mui.toast("密码必须包含字母、数字和符号，且长度为8到16位");
+                    return;
+                }
+
+                // 检测确认密码是否一致
+                if (this.user.password !== this.user.repassword) {
+                    mui.toast("密码和确认密码不一致");
+                    return;
+                }
+
+                // 网络请求，封装了 promise
+                util.post("/user/createUser", this.user).then(res => {
+                    console.log(res);
+                    if (res.code == 1) {
+                        mui.toast(res.msg);
+                    } else {
+                        mui.toast("注册成功,即将跳转");
+                        location.href = "/index";
+                    }
+                });
+            },
+
+            // 校验用户名合法性：3到20个字符，字母、数字或下划线
+            validateUsername: function (username) {
+                var regex = /^[A-Za-z0-9_]{3,20}$/;
+                return regex.test(username);
+            },
+
+            // 校验密码是否符合要求：包含字母、数字和符号，长度8到16位
+            validatePassword: function (password) {
+                var regex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[\W_]).{8,16}$/;
+                return regex.test(password);
+            }
+        }
+    });
+
+</script>

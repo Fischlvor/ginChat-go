@@ -1,0 +1,10 @@
+mysql:
+  user: root
+  password: zJ0_jE6e,mSYLYYx
+  dsn:  root:zJ0_jE6e,mSYLYYx@tcp(8.148.64.96:11263)/unionsdk?charset=utf8
+redis:
+  addr: 8.148.64.96:16379
+  password: ""
+  DB: 3
+  poolSize: 30
+  minIdleConn:  30
